@@ -17,9 +17,7 @@ import java.util.List;
 
 import flickr.com.geminihsu.tw.flickrexercise.adapter.GalleryItem;
 
-/**
- * Created by TibiaZ on 14/08/2016.
- */
+
 public class FlickrManager {
 
     // Constants

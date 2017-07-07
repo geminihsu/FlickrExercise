@@ -13,10 +13,9 @@ import flickr.com.geminihsu.tw.flickrexercise.utils.ImageDownloader;
 
 public class GalleryItemAdapter extends BaseAdapter {
 
-    private LayoutInflater mInflater;
+
     private Context context;
 	private String[] image_url;
-	private int mPaddingInPixels;
 
 
     public GalleryItemAdapter(Context _context, String[] url) {
@@ -42,7 +41,6 @@ public class GalleryItemAdapter extends BaseAdapter {
 
 		imgView.setLayoutParams(new Gallery.LayoutParams(1000, 1000));
 		imgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-		//imageUtils.DisplayImage(image_url[position], imgView);
 		ImageDownloader imageDownLoader = new ImageDownloader(imgView);
 		imageDownLoader.execute(image_url[position]);
 		return imgView;
