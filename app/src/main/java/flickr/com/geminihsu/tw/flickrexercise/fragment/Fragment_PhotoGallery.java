@@ -1,13 +1,19 @@
 package flickr.com.geminihsu.tw.flickrexercise.fragment;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -24,6 +30,9 @@ import flickr.com.geminihsu.tw.flickrexercise.utils.ImageDownloader;
  * Created by TibiaZ on 12/08/2016.
  */
 public class Fragment_PhotoGallery extends Fragment {
+
+
+    private final int ACTIONBAR_MENU_SINGLE_GALLERY = 0x0001;
 
     public final static String BUNDLE_GALLERY_LIST = "gallery_list";// from
 
@@ -47,16 +56,56 @@ public class Fragment_PhotoGallery extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         setRetainInstance(true);
         new FetchItemTask().execute();
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
 
-    // onCreateView
+            case ACTIONBAR_MENU_SINGLE_GALLERY:
+                data = new String[mItems.size()];
+                int i = 0;
+                for(GalleryItem item1 : mItems)
+                {
+                    data[i] = item1.getUrl();
+                    i++;
+                }
+                android.support.v4.app.Fragment newFragment = new Fragment_SingleGallery();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                Bundle b = new Bundle();
+                b.putStringArray(BUNDLE_GALLERY_LIST, data);
+
+                newFragment.setArguments(b);
+                transaction.replace(R.id.fragment_container, newFragment);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
+
+                transaction.commit();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item = menu.add(Menu.NONE, ACTIONBAR_MENU_SINGLE_GALLERY, Menu.NONE, getString(R.string.single_gallery));
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.fragment_photogallery, container, false);
-
+        setHasOptionsMenu(true);
         mPhotoRecyclerView = (RecyclerView) v
                 .findViewById(R.id.fragment_photo_gallery_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
@@ -75,25 +124,7 @@ public class Fragment_PhotoGallery extends Fragment {
                 @Override
                 public void onItemClick(GalleryItem item) {
                     Log.e(TAG,"Click");
-                    data = new String[mItems.size()];
-                    int i = 0;
-                    for(GalleryItem item1 : mItems)
-                    {
-                        data[i] = item1.getUrl();
-                        i++;
-                    }
-                    android.support.v4.app.Fragment newFragment = new Fragment_SingleGallery();
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    Bundle b = new Bundle();
-                    //b.putInt(ClientTakeRideActivity.BUNDLE_ORDER_DRIVER_TYPE, dataType.value());
-                    //b.putInt(ClientTakeRideActivity.BUNDLE_ORDER_CARGO_TYPE, orderCargoType.value());
-                    b.putStringArray(BUNDLE_GALLERY_LIST, data);
 
-                    newFragment.setArguments(b);
-                    transaction.replace(R.id.fragment_container, newFragment);
-                    transaction.addToBackStack(null);
-
-                    transaction.commit();
                 }
             }));
         }
